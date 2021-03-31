@@ -23,7 +23,7 @@ public class Lesson44Server extends BasicServer {
         registerGet("/books", this::freemarkerBookHandler);
 
     }
-//
+////
     private static Configuration initFreeMarker() {
         try {
             Configuration cfg = new Configuration(Configuration.VERSION_2_3_29);
