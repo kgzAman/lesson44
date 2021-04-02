@@ -9,10 +9,15 @@ import kz.attractor.java.server.BasicServer;
 import kz.attractor.java.server.ContentType;
 import kz.attractor.java.server.ResponseCodes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.joining;
 
 public class Lesson44Server extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
@@ -23,19 +28,19 @@ public class Lesson44Server extends BasicServer {
         registerGet("/user", this::freemarkerUserHandler);
         registerGet("/books", this::freemarkerBookHandler);
         registerGet("/home", this::freemarkerHomeHandler);
+        registerGet("/login", this::loginGetHolder);
+        registerPost("/login", this::loginPostHolder);
+        registerGet("/register",this::freemarkerRegisterGet);
+        registerPost("/register",this::freemarkerRegisterGet);
 
     }
-////
+
     private static Configuration initFreeMarker() {
         try {
             Configuration cfg = new Configuration(Configuration.VERSION_2_3_29);
-            // путь к каталогу в котором у нас хранятся шаблоны
-            // это может быть совершенно другой путь, чем тот, откуда сервер берёт файлы
-            // которые отправляет пользователю
+
             cfg.setDirectoryForTemplateLoading(new File("data"));
 
-            // прочие стандартные настройки о них читать тут
-            // https://freemarker.apache.org/docs/pgui_quickstart_createconfiguration.html
             cfg.setDefaultEncoding("UTF-8");
             cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
             cfg.setLogTemplateExceptions(false);
@@ -46,11 +51,9 @@ public class Lesson44Server extends BasicServer {
             throw new RuntimeException(e);
         }
     }
-
     public void freemarkerSampleHandler(HttpExchange exchange) {
         renderTemplate(exchange,"index.html", getSampleDataModel());
     }
-
     public void freemarkerHomeHandler(HttpExchange exchange) {
         renderTemplate(exchange,"mainPage.html", getSampleDataModel());
     }
@@ -62,30 +65,23 @@ public class Lesson44Server extends BasicServer {
         renderTemplate(exchange,"user.ftl", getUserDataModel());
     }
 
-protected void renderTemplate(HttpExchange exchange, String templateFile,Object dataModel) {
+    private void freemarkerRegisterGet(HttpExchange exchange) {
+        renderTemplate(exchange,"register.ftl", getUserDataModel());
+    }
+
+    protected void renderTemplate(HttpExchange exchange, String templateFile,Object dataModel) {
     try {
-        // загружаем шаблон из файла по имени.
-        // шаблон должен находится по пути, указанном в конфигурации
         Template temp = freemarker.getTemplate(templateFile);
 
-        // freemarker записывает преобразованный шаблон в объект класса writer
-        // а наш сервер отправляет клиенту массивы байт
-        // по этому нам надо сделать "мост" между этими двумя системами
-
-        // создаём поток который сохраняет всё, что в него будет записано в байтовый массив
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        // создаём объект, который умеет писать в поток и который подходит для freemarker
+
         try (OutputStreamWriter writer = new OutputStreamWriter(stream)) {
 
-            // обрабатываем шаблон заполняя его данными из модели
-            // и записываем результат в объект "записи"
             temp.process(dataModel, writer);
             writer.flush();
 
-            // получаем байтовый поток
             var data = stream.toByteArray();
 
-            // отправляем результат клиенту
             sendByteData(exchange, ResponseCodes.OK, ContentType.TEXT_HTML, data);
         }
     } catch (IOException | TemplateException e) {
@@ -93,11 +89,60 @@ protected void renderTemplate(HttpExchange exchange, String templateFile,Object 
     }
 }
 
+    private void loginPostHolder(HttpExchange exchange) {
+        String cType = getContentType(exchange);
+        String raw = getBody(exchange);
+
+
+        Map<String, String> parsed = Utils.parseUrlEncoded(raw, "&");
+
+        if( parsed.containsKey("mail") && parsed.get("mail").equals("ttt@ttt.ttt")) {
+                redirect303(exchange,"/register/sucsses");
+        }
+
+        String fmt = "<p>Необработанные данные: <b>%s</b></p>"
+                + "<p>Content-type: <b>%s</b></p>"
+                + "<p>После обработки: <b>%s</b></p>";
+        String data = String.format(fmt, raw, cType, parsed);
+        try {
+            sendByteData(exchange, ResponseCodes.OK,
+                    ContentType.TEXT_PLAIN, data.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String getBody(HttpExchange exchange) {
+        InputStream input = exchange.getRequestBody();
+        Charset utf8 = StandardCharsets.UTF_8;
+        InputStreamReader isr = new InputStreamReader(input, utf8);
+
+        try (BufferedReader reader = new BufferedReader(isr)) {
+            return reader.lines().collect(joining(""));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "";
+
+    }
+
+    private String getContentType(HttpExchange exchange) {
+        return exchange.getRequestHeaders()
+                .getOrDefault("Content-Type", List.of(""))
+                .get(0);
+
+    }
+
+    private void loginGetHolder(HttpExchange exchange) {
+        Path path  =  makeFilePath("login.ftl");
+        sendFile(exchange, path, ContentType.TEXT_HTML);
+    }
+
     private SampleDataModel getSampleDataModel() {
-        // возвращаем экземпляр тестовой модели-данных
-        // которую freemarker будет использовать для наполнения шаблона
+
         return new SampleDataModel();
     }
+
     private BookDataModel getBookDataModel(){
         return new BookDataModel();
     }
@@ -105,5 +150,20 @@ protected void renderTemplate(HttpExchange exchange, String templateFile,Object 
     private UserDataModel getUserDataModel(){
         return new UserDataModel();
     }
+
+    protected void redirect303(HttpExchange exchange, String path) {
+        try {
+            exchange.getResponseHeaders().add("Location", path);
+            exchange.sendResponseHeaders(303, 0);
+            exchange.getResponseBody().close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loginPost(HttpExchange exchange) {
+        redirect303(exchange, "/");
+    }
+
 
 }
