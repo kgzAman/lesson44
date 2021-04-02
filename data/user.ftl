@@ -10,17 +10,14 @@
 </head>
 <body>
 
-<h1>"У нас есть книги " </h1>
-    <ul><#list books as book>
-        <li class="">
-        ${book.name}
-            написанная: ${book.author}
-            жанр: ${book.genre}
-            статус : ${book.status}
-        </li>
+<ul>
+    <h1>Сотрудник!</h1>
+    <ul>
+        <#list customers as customer>
+            <li>${customer.name} взял почитать ${customer.tookRead} прочитал ${customer.alreadyTook}</li>
         </#list>
-
     </ul>
+</ul>
 
 </body>
 </html>

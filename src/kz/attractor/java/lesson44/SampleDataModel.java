@@ -1,5 +1,6 @@
 package kz.attractor.java.lesson44;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +9,6 @@ public class SampleDataModel {
     private User user = new User("Apache", "FreeMarker");
     private LocalDateTime currentDateTime = LocalDateTime.now();
     private List<User> customers = new ArrayList<>();
-
 
     public SampleDataModel() {
         customers.add(new User("Marco"));
@@ -41,32 +41,6 @@ public class SampleDataModel {
         this.customers = customers;
     }
 
-    public static class book{
-        private String name;
-        private String author;
-
-        public book(String name, String author) {
-            this.name = name;
-            this.author = author;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getAuthor() {
-            return author;
-        }
-
-        public void setAuthor(String author) {
-            this.author = author;
-        }
-    }
-
     public static class User {
         private String firstName;
         private String lastName;
@@ -89,6 +63,7 @@ public class SampleDataModel {
             this.middleName = middleName;
             this.email = firstName+"@test.mail";
         }
+
 
         public String getFirstName() {
             return firstName;

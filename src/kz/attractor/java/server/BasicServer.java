@@ -68,6 +68,7 @@ public abstract class BasicServer {
 
         // эти обрабатывают запросы с указанными расширениями
         registerFileHandler(".css", ContentType.TEXT_CSS);
+        registerFileHandler(".ftl", ContentType.TEXT_FTL);
         registerFileHandler(".html", ContentType.TEXT_HTML);
         registerFileHandler(".jpg", ContentType.IMAGE_JPEG);
         registerFileHandler(".png", ContentType.IMAGE_PNG);
@@ -76,6 +77,10 @@ public abstract class BasicServer {
 
     protected final void registerGet(String route, RouteHandler handler) {
         getRoutes().put("GET " + route, handler);
+    }
+
+    protected final void registerPost(String route, RouteHandler handler) {
+        getRoutes().put("POST" + route, handler);
     }
 
     protected final void registerFileHandler(String fileExt, ContentType type) {

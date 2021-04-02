@@ -26,6 +26,11 @@ public class BookDataModel {
         private String genre;
         private String status;
 
+
+        public Book(String name) {
+            this.name = name;
+        }
+
         public Book(String name, String author, String genre, String status) {
             this.name = name;
             this.author = author;
