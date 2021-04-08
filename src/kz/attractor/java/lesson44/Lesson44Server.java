@@ -16,11 +16,17 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 
 import static java.util.stream.Collectors.joining;
 
 public class Lesson44Server extends BasicServer {
     private final static Configuration freemarker = initFreeMarker();
+    private final ArrayList<User> users = new ArrayList<>();
+    public static final String MAIL = "email";
+    public static final String LOGIN = "login";
+    public static final String PASSWORD = "password";
 
     public Lesson44Server(String host, int port) throws IOException {
         super(host, port);
@@ -28,10 +34,14 @@ public class Lesson44Server extends BasicServer {
         registerGet("/user", this::freemarkerUserHandler);
         registerGet("/books", this::freemarkerBookHandler);
         registerGet("/home", this::freemarkerHomeHandler);
+
         registerGet("/login", this::loginGetHolder);
-        registerPost("/login", this::loginPostHolder);
-        registerGet("/register",this::freemarkerRegisterGet);
-        registerPost("/register",this::freemarkerRegisterGet);
+        registerGet("/registration",this::sendFileRegistration);
+        registerGet("/profile",this::profileGetHolder);
+
+
+        registerPost("/registration",this::registrationPostHandler);
+        registerPost("/login",this::loginPostHandler);
 
     }
 
@@ -51,6 +61,7 @@ public class Lesson44Server extends BasicServer {
             throw new RuntimeException(e);
         }
     }
+
     public void freemarkerSampleHandler(HttpExchange exchange) {
         renderTemplate(exchange,"index.html", getSampleDataModel());
     }
@@ -65,8 +76,8 @@ public class Lesson44Server extends BasicServer {
         renderTemplate(exchange,"user.ftl", getUserDataModel());
     }
 
-    private void freemarkerRegisterGet(HttpExchange exchange) {
-        renderTemplate(exchange,"register.ftl", getUserDataModel());
+    private void sendFileRegistration(HttpExchange exchange) {
+        this.sendFile(exchange,  makeFilePath("register.ftl"), ContentType.TEXT_HTML);
     }
 
     protected void renderTemplate(HttpExchange exchange, String templateFile,Object dataModel) {
@@ -89,27 +100,59 @@ public class Lesson44Server extends BasicServer {
     }
 }
 
-    private void loginPostHolder(HttpExchange exchange) {
+    private void loginPostHandler(HttpExchange exchange) {
         String cType = getContentType(exchange);
         String raw = getBody(exchange);
 
+        Map<String, String> parsed =
+                Utils.parseUrlEncoded(raw, "&");
 
-        Map<String, String> parsed = Utils.parseUrlEncoded(raw, "&");
+        if(isExistUser(parsed.get(MAIL))){
+            renderTemplate(exchange, "profile.html", parsed);
+            return;}
+        redirect303(exchange,"/login");
 
-        if( parsed.containsKey("mail") && parsed.get("mail").equals("ttt@ttt.ttt")) {
-                redirect303(exchange,"/register/sucsses");
+//
+//        User user = registrationUser(parsed);
+//        renderTemplate(exchange, "profile.html", user);
+
+    }
+
+    private boolean isValidUser(Map<String, String> parsed) {
+        Optional<User> user = getUserByLogin(parsed.get(LOGIN));
+        return user.map(value -> value.getPassword().equals(parsed.get(PASSWORD))).orElse(false);
+    }
+
+    private Optional<User> getUserByLogin(String login) {
+        for(User user: users) {
+            if(user.getLogin().equals(login)) {
+                return Optional.of(user);
+            }
         }
+        return Optional.empty();
+    }
 
-        String fmt = "<p>Необработанные данные: <b>%s</b></p>"
-                + "<p>Content-type: <b>%s</b></p>"
-                + "<p>После обработки: <b>%s</b></p>";
-        String data = String.format(fmt, raw, cType, parsed);
-        try {
-            sendByteData(exchange, ResponseCodes.OK,
-                    ContentType.TEXT_PLAIN, data.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
+    private void registrationPostHandler(HttpExchange exchange) {
+        String cType = getContentType(exchange);
+        String raw = getBody(exchange);
+
+        Map<String, String> parsed =
+                Utils.parseUrlEncoded(raw, "&");
+        if(isExistUser(parsed.get(MAIL))){
+            renderTemplate(exchange, "error.html", parsed);
+            return;
         }
+        User user = registrationUser(parsed);
+        renderTemplate(exchange, "sucsses.ftl", user);
+    }
+
+    private void loginGetHolder(HttpExchange exchange) {
+        Path path  =  makeFilePath("login.ftl");
+        sendFile(exchange, path, ContentType.TEXT_HTML);
+    }
+    private void profileGetHolder(HttpExchange exchange) {
+        Path path  =  makeFilePath("profile.html");
+        sendFile(exchange, path, ContentType.TEXT_HTML);
     }
 
     private String getBody(HttpExchange exchange) {
@@ -123,20 +166,14 @@ public class Lesson44Server extends BasicServer {
             e.printStackTrace();
         }
         return "";
-
     }
 
     private String getContentType(HttpExchange exchange) {
         return exchange.getRequestHeaders()
                 .getOrDefault("Content-Type", List.of(""))
                 .get(0);
-
     }
 
-    private void loginGetHolder(HttpExchange exchange) {
-        Path path  =  makeFilePath("login.ftl");
-        sendFile(exchange, path, ContentType.TEXT_HTML);
-    }
 
     private SampleDataModel getSampleDataModel() {
 
@@ -161,9 +198,21 @@ public class Lesson44Server extends BasicServer {
         }
     }
 
-    private void loginPost(HttpExchange exchange) {
-        redirect303(exchange, "/");
+    private boolean isExistUser(String email) {
+        return users.stream()
+                .anyMatch(user -> user.getEmail().equals(email));
     }
+
+    private User registrationUser(Map<String, String> parsed) {
+        User newUser = new User();
+        newUser.setEmail(parsed.get(MAIL));
+        newUser.setLogin(parsed.get(LOGIN));
+        newUser.setPassword(parsed.get(PASSWORD));
+        users.add(newUser);
+        return newUser;
+    }
+
+
 
 
 }

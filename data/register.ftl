@@ -9,25 +9,22 @@
 
 <body>
 <main>
-    <form action="/login" method="post">
+    <form action="/registration" method="post">
         <fieldset>
-            <div class="legend">
-                <p>Welcome!</p>
-                <img src="/images/1.jpg" alt="coins" style="display:block; width: 200px; height: 200px;">
-            </div>
             <div class="form-element">
                 <label for="user-email">email</label>
                 <input type="email" name="email" id="user-email" placeholder="your email" required autofocus>
             </div>
             <div class="form-element">
-                <label for="user-password">password</label>
-                <input type="password" name="user-password" id="user-password" placeholder="your password" required>
-            </div>
-            <div class="hr-line">
-                <span class="details">one more step to go</span>
+                <label for="login">login</label>
+                <input type="input" name="login" id="login" placeholder="your login" required>
             </div>
             <div class="form-element">
-                <button class="register-button" type="submit">Register!</button>
+                <label for="password">password</label>
+                <input type="password" name="password" id="password" placeholder="your password" required>
+            </div>
+            <div class="form-element">
+                <button class="register-button" type="submit">Registration!</button>
             </div>
         </fieldset>
     </form>

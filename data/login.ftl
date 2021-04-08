@@ -8,8 +8,7 @@
 </head>
 
 <body>
-<main>
-    <form action="/login" method="post">
+   <h1> <form action="/login" method="post">
         <fieldset>
             <div class="legend">
                 <p>Welcome!</p>
@@ -20,8 +19,12 @@
                 <input type="email" name="email" id="user-email" placeholder="your email" required autofocus>
             </div>
             <div class="form-element">
-                <label for="user-password">password</label>
-                <input type="password" name="user-password" id="user-password" placeholder="your password" required>
+                <label for="login">login</label>
+                <input type="input" name="login" id="login" placeholder="your login" required>
+            </div>
+            <div class="form-element">
+                <label for="password">password</label>
+                <input type="password" name="password" id="password" placeholder="your password" required>
             </div>
             <div class="hr-line">
                 <span class="details">one more step to go</span>
@@ -30,7 +33,7 @@
                 <button class="register-button" type="submit">Login!</button>
             </div>
         </fieldset>
-    </form>
+    </form></h1>
 </main>
 </body>
 
