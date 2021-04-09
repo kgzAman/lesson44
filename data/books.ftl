@@ -6,21 +6,32 @@
           name="viewport">
     <meta content="ie=edge" http-equiv="X-UA-Compatible">
     <title>Freemarker Sample Page</title>
-    <link href="css/freemarker.css" rel="stylesheet">
+    <style>
+        li{list-style-type: none;
+        text-underline-mode: none}
+    </style>
+    <link href="css/books.css" rel="stylesheet">
 </head>
 <body>
+    <div
+            class="header"><h1>"У нас есть книги " </h1>
+    </div>
+    <div class="book1">
+        <a href="http://localhost:9899/book1">   <img src="/images/book1.jpg" alt="coins" style="display:block; width: 200px; height: 200px;"> </a>
+    </div>
+    <div class="book2">
+        <a href="http://localhost:9899/book2">   <img src="/images/book2.jpg" alt="coins" style="display:block; width: 200px; height: 200px;"> </a>
 
-<h1>"У нас есть книги " </h1>
-    <ul><#list books as book>
-        <li class="">
-        ${book.name}
-            написанная: ${book.author}
-            жанр: ${book.genre}
-            статус : ${book.status}
-        </li>
-        </#list>
+    </div>
+    <div class="book3">
+        <a href="http://localhost:9899/book3">   <img src="/images/book3.jpg" alt="coins" style="display:block; width: 200px; height: 200px;"> </a>
 
-    </ul>
+    </div>
+    <div class="book4">
+        <a href="http://localhost:9899/book4">   <img src="/images/book4.jpg" alt="coins" style="display:block; width: 200px; height: 200px;"> </a>
+
+    </div>
+
 
 </body>
 </html>

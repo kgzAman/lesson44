@@ -1,0 +1,45 @@
+
+.book1{
+    text-align: center;
+
+    color: green;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto ;
+    width: 15em;
+}
+
+.book2{
+    text-align: center;
+    /*justify-content: center;*/
+    color: green;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto ;
+    width: 15em;
+}
+.book3{
+    text-align: center;
+    /*justify-content: center;*/
+    color: green;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto ;
+    width: 15em;
+}
+.book4{
+    text-align: center;
+    /*justify-content: center;*/
+    color: green;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto ;
+    width: 15em;
+}
+.header {
+    text-align: center ;
+    color: black;
+}
+.nameBook{
+    margin-top: 50px;
+}

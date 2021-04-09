@@ -13,15 +13,15 @@
         <fieldset>
             <div class="form-element">
                 <label for="user-email">email</label>
-                <input type="email" name="email" id="user-email" placeholder="your email" required autofocus>
+                <input type="email" name="email" id="user-email" placeholder="enter an email" required autofocus>
             </div>
             <div class="form-element">
                 <label for="login">login</label>
-                <input type="input" name="login" id="login" placeholder="your login" required>
+                <input type="input" name="login" id="login" placeholder="enter login" required>
             </div>
             <div class="form-element">
                 <label for="password">password</label>
-                <input type="password" name="password" id="password" placeholder="your password" required>
+                <input type="password" name="password" id="password" placeholder="enter password" required>
             </div>
             <div class="form-element">
                 <button class="register-button" type="submit">Registration!</button>

@@ -3,6 +3,8 @@ package kz.attractor.java.lesson44;
 import java.util.ArrayList;
 import java.util.List;
 
+import static kz.attractor.java.lesson44.Status.FREE;
+
 public class BookDataModel {
     private List<Book> books= new ArrayList<>();
 
@@ -15,27 +17,28 @@ public class BookDataModel {
     }
 
     public BookDataModel() {
-            books.add(new Book("Celestial Bodies","Jokha Alharthi","Detective","User"));
-            books.add(new Book("Cheque book","Vasdev Mohi","Romantic","on"));
-            books.add(new Book("The Overstory","TRichard Powers","History","User"));
-            books.add(new Book("Viswanathan Anand and Susan Ninan","Mind-Master","MakeSelf","User"));
+            books.add(new Book("Celestial Bodies","Jokha Alharthi","Detective"));
+            books.add(new Book("Cheque book","Vasdev Mohi","Romantic"));
+            books.add(new Book("The Overstory","TRichard Powers","History"));
+            books.add(new Book("Viswanathan Anand and Susan Ninan","Mind-Master","MakeSelf"));
         }
     public class Book{
         private String name;
         private String author;
         private String genre;
-        private String status;
+        private Status status = FREE;
+
+
 
 
         public Book(String name) {
             this.name = name;
         }
 
-        public Book(String name, String author, String genre, String status) {
+        public Book(String name, String author, String genre) {
             this.name = name;
             this.author = author;
             this.genre = genre;
-            this.status = status;
         }
 
         public String getName() {
@@ -62,11 +65,11 @@ public class BookDataModel {
             this.genre = genre;
         }
 
-        public String getStatus() {
+        public Status getStatus() {
             return status;
         }
 
-        public void setStatus(String status) {
+        public void setStatus(Status status) {
             this.status = status;
         }
     }

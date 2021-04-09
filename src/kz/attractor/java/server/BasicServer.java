@@ -48,25 +48,10 @@ public abstract class BasicServer {
     }
 
     private void registerCommonHandlers() {
-        // самый основной обработчик, который будет определять
-        // какие обработчики вызывать в дальнейшем
         server.createContext("/", this::handleIncomingServerRequests);
 
-
-
-
-        // специфичные обработчики, которые выполняют свои действия
-        // в зависимости от типа запроса
-
-        // обработчик для корневого запроса
-        // именно этот обработчик отвечает что отображать,
-        // когда пользователь запрашивает localhost:9889
         registerGet("/", exchange -> sendFile(exchange, makeFilePath("index.html"), ContentType.TEXT_HTML));
 
-
-
-
-        // эти обрабатывают запросы с указанными расширениями
         registerFileHandler(".css", ContentType.TEXT_CSS);
         registerFileHandler(".ftl", ContentType.TEXT_FTL);
         registerFileHandler(".html", ContentType.TEXT_HTML);
